@@ -33,4 +33,12 @@ contract VoteTest {
     function checkTotalVotes() public view returns (uint256 total) {
         total = votes;
     }
+
+    function retrieveLiquidVote(address _voter) public {
+        bool voteProof = hasVoted[_voter];
+        require(voteProof == true, "User has not voted yet");
+
+        hasVoted[_voter] = false;
+        votes -= 1;
+    }
 }

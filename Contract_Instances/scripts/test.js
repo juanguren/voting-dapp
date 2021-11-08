@@ -13,13 +13,16 @@ async function main() {
   const anotherVote = await vote.castVote(randomPerson.address);
   await anotherVote.wait();
 
-  const hasVoted = await vote.checkVote(owner.address);
+  const hasVoted = await vote.checkVote(randomPerson.address);
   console.log({
     voteStatus: {
       hasVoted: hasVoted[0],
       timestamp: new Date(hasVoted[1] * 1000),
     },
   });
+
+  const getVoteBack = await vote.retrieveLiquidVote(owner.address);
+  getVoteBack.wait();
 
   const total = await vote.checkTotalVotes();
   console.log({ total: total.toString() });
