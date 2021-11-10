@@ -7,11 +7,16 @@ contract VoteTest {
     
     mapping(address => uint256) public voteRegistry;
     mapping(address => bool) public hasVoted;
+    event voteTallied(address voter, uint256 timestamp);
 
     uint256 votes;
 
     constructor() {
         console.log("DEPLOYED");
+    }
+
+    function _triggerEvent(address _voter) private {
+        emit voteTallied(_voter, block.timestamp);
     }
 
     function castVote(address _voter) public {
@@ -21,6 +26,7 @@ contract VoteTest {
         voteRegistry[_voter] = block.timestamp;
         hasVoted[_voter] = true;
         votes += 1;
+        _triggerEvent(_voter);
     }
 
     function checkVote(address _voter) public view returns (bool, uint256) {
@@ -30,10 +36,6 @@ contract VoteTest {
         return (voted, timestamp);
     }
 
-    function checkTotalVotes() public view returns (uint256 total) {
-        total = votes;
-    }
-
     function retrieveLiquidVote(address _voter) public {
         bool voteProof = hasVoted[_voter];
         require(voteProof == true, "User has not voted yet");
@@ -41,4 +43,6 @@ contract VoteTest {
         hasVoted[_voter] = false;
         votes -= 1;
     }
+
+    function checkTotalVotes() public view returns (uint256 total) { total = votes; }
 }
