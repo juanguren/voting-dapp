@@ -3,19 +3,23 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
-struct Proposal {
-    string ID;
+struct Creator {
+    address id;
+    string name;
+}
+
+struct ProposalForm {
     string name;
     uint goal; // vote count
     uint createdAt; // timestamp
     bool isActive;
     uint lastVotedAt; // timestamp
-    uint totalVoteCount;
+    uint voteCount;
+    Creator createdBy;
     // mapping(uint => Proposal) voteCount;
 }
 
 struct Voter {
-    address ID;
     string name;
     uint age;
     bool hasVoted;
