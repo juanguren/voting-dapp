@@ -1,32 +1,49 @@
-const hre = require('hardhat');
+const hre = require("hardhat");
 
 async function main() {
   const [owner, randomPerson] = await hre.ethers.getSigners();
 
-  const VoteTest = await hre.ethers.getContractFactory('VoteTest');
-  const vote = await VoteTest.deploy();
-  await vote.deployed();
+  const { address: proposalAddress } = await deployProposalContract();
+  const vote = await deployVoterContract(proposalAddress);
 
-  const voteSent = await vote.castVote(owner.address);
-  await voteSent.wait();
+  // *********************************************************************
 
-  const anotherVote = await vote.castVote(randomPerson.address);
-  await anotherVote.wait();
+  const saveUser = await vote.newVoter(owner.address, "Juan", 26);
+  await saveUser.wait();
 
-  const hasVoted = await vote.checkVote(randomPerson.address);
-  console.log({
-    voteStatus: {
-      hasVoted: hasVoted[0],
-      timestamp: new Date(hasVoted[1] * 1000),
-    },
-  });
+  const saveUserR = await vote.newVoter(randomPerson.address, "Hugo", 26);
+  await saveUserR.wait();
 
-  const getVoteBack = await vote.retrieveLiquidVote(owner.address);
-  getVoteBack.wait();
+  const voters = await vote.getVoters();
+  console.log({ voters });
 
-  const total = await vote.checkTotalVotes();
-  console.log({ total: total.toString() });
+  const getVoter = await vote.getVoter(owner.address);
+  const { name, age, hasVoted, proposalId } = getVoter;
+  console.log({ name, hasVoted });
+
+  const buildProposal = await vote.buildProposal(
+    owner.address,
+    "Test Proposal",
+    20,
+    new Date().getTime(),
+    0
+  );
+  await buildProposal.wait();
 }
+
+const deployProposalContract = async () => {
+  const Proposal = await hre.ethers.getContractFactory("Proposal");
+  const proposal = await Proposal.deploy();
+
+  return await proposal.deployed();
+};
+
+const deployVoterContract = async (address) => {
+  const User = await hre.ethers.getContractFactory("User");
+  const vote = await User.deploy(address);
+
+  return await vote.deployed();
+};
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
