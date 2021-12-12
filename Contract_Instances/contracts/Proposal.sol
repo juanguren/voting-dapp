@@ -25,19 +25,24 @@ contract Proposal {
         _;
     }
 
+    modifier proposalisActive(uint _id) {
+        bool isActive = proposals[_id].isActive;
+        require(isActive, "Proposal is inactive");
+        _;
+    }
+
     function newProposal(
         uint _id,
         string memory _name,
         uint _goal,
         uint _createdAt,
-        bool _isActive,
         uint _lastVotedAt,
         Creator memory _creator
         ) public proposalExists(_id) {
             proposals[_id].name = _name;
             proposals[_id].goal = _goal;
             proposals[_id].createdAt = _createdAt;
-            proposals[_id].isActive = _isActive;
+            proposals[_id].isActive = true;
             proposals[_id].lastVotedAt = _lastVotedAt;
             proposals[_id].voteCount = 0;
             proposals[_id].createdBy = _creator;

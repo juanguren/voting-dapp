@@ -62,6 +62,6 @@ contract User {
         creator.id = _voterId;
         creator.name = voterName;
 
-        proposal.newProposal(proposalId, _proposalName, _target, _createdAt, true, _lastVotedAt, creator);
+        proposal.newProposal(proposalId, _proposalName, _target, _createdAt, _lastVotedAt, creator);
     }
 }
