@@ -19,26 +19,31 @@ contract User {
         return voters[_id].hasVoted;
     }
 
-    function newVoter(address _id, string memory _name, uint _age) public {
-        bool userExists;
+    modifier userExists() {
+        bool userAlreadyCreated;
         if(voterList.length > 0) {
             for(uint i = 0; i < voterList.length; i++) {
-                userExists = voterList[i] == _id;
+                userAlreadyCreated = voterList[i] == msg.sender;
             }
         }
 
-        require(!userExists, "User already exists!");
-
-        voters[_id].name = _name;
-        voters[_id].age = _age;
-        voters[_id].hasVoted = false;
-        voters[_id].proposalId = "";
-
-        voterList.push(_id);
+        require(!userAlreadyCreated, "User already exists!");
+        _;
     }
 
-    function getVoter(address _id) public view returns (Voter memory) {
-        Voter memory voter = voters[_id];
+    function newVoter(string memory _name, uint _age) public userExists {
+        address id = msg.sender;
+
+        voters[id].name = _name;
+        voters[id].age = _age;
+        voters[id].hasVoted = false;
+        voters[id].proposalId = "";
+
+        voterList.push(id);
+    }
+
+    function getVoter() public view returns (Voter memory) {
+        Voter memory voter = voters[msg.sender];
         return voter;
     }
 
