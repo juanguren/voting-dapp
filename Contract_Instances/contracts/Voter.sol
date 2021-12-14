@@ -37,7 +37,7 @@ contract User {
         voters[id].name = _name;
         voters[id].age = _age;
         voters[id].hasVoted = false;
-        voters[id].proposalId = "";
+        voters[id].proposalId = 0;
 
         voterList.push(id);
     }
@@ -75,6 +75,12 @@ contract User {
     }
 
     function voteProposal(uint _proposalId, uint _lastVotedAt) public {
+        Voter storage voter = voters[msg.sender];
+        require(!voter.hasVoted, "User has already voted.");
+
+        voter.hasVoted = true;
+        voter.proposalId = _proposalId;
+
         proposal.proposalVote(_proposalId, _lastVotedAt);
     }
 }

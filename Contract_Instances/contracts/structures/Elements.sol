@@ -23,5 +23,5 @@ struct Voter {
     string name;
     uint age;
     bool hasVoted;
-    string proposalId;
+    uint proposalId;
 }
