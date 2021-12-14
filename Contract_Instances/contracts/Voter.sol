@@ -15,7 +15,7 @@ contract User {
         proposal = Proposal(_proposalId);
     }
 
-    function getVoterStatus(address _id) private view returns (bool) {
+    function _getVoterStatus(address _id) private view returns (bool) {
         return voters[_id].hasVoted;
     }
 
@@ -68,5 +68,13 @@ contract User {
         creator.name = voterName;
 
         proposal.newProposal(proposalId, _proposalName, _target, _createdAt, _lastVotedAt, creator);
+    }
+
+    function getProposal(uint _id) public view returns (ProposalForm memory) {
+        return proposal.getProposal(_id);
+    }
+
+    function voteProposal(uint _proposalId, uint _lastVotedAt) public {
+        proposal.proposalVote(_proposalId, _lastVotedAt);
     }
 }

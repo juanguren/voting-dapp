@@ -8,16 +8,13 @@ async function main() {
 
   // *********************************************************************
 
-  const saveUser = await vote.newVoter(owner.address, "Juan", 26);
+  const saveUser = await vote.newVoter("Juan", 26);
   await saveUser.wait();
-
-  const saveUserR = await vote.newVoter(randomPerson.address, "Hugo", 26);
-  await saveUserR.wait();
 
   const voters = await vote.getVoters();
   console.log({ voters });
 
-  const getVoter = await vote.getVoter(owner.address);
+  const getVoter = await vote.getVoter();
   const { name, age, hasVoted, proposalId } = getVoter;
   console.log({ name, hasVoted });
 
@@ -29,6 +26,22 @@ async function main() {
     0
   );
   await buildProposal.wait();
+
+  const voteProposal = await vote.voteProposal(0, new Date().getTime());
+  await voteProposal.wait();
+
+  const {
+    name: propName,
+    isActive,
+    voteCount,
+    lastVotedAt,
+  } = await vote.getProposal(0);
+  console.log({
+    propName,
+    isActive,
+    voteCount: Number(voteCount.toString()),
+    lastVotedAt: new Date(lastVotedAt * 1000),
+  });
 }
 
 const deployProposalContract = async () => {
