@@ -3,20 +3,23 @@ pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
 
+/// @title VoteTest is a simple contract acting as a one-proposal app for users to vote securely and even retrieve their votes
+
 contract VoteTest {
     
     mapping(address => uint256) public voteRegistry;
     mapping(address => bool) public hasVoted;
-    event voteTallied(address voter, uint256 timestamp);
+    event VoteTallied(address voter, uint256 timestamp);
 
-    uint256 votes;
+    uint256 public votes;
 
     constructor() {
         console.log("DEPLOYED");
     }
 
+    /// @param _voter receives the user's address
     function _triggerEvent(address _voter) private {
-        emit voteTallied(_voter, block.timestamp);
+        emit VoteTallied(_voter, block.timestamp);
     }
 
     function castVote(address _voter) public {
@@ -29,6 +32,8 @@ contract VoteTest {
         _triggerEvent(_voter);
     }
 
+    /// @param _voter is the user's address
+    /// @return The user voting status and the timestamp of the action
     function checkVote(address _voter) public view returns (bool, uint256) {
         bool voted = hasVoted[_voter];
         uint256 timestamp = voteRegistry[_voter];
