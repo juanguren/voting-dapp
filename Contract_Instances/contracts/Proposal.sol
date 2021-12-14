@@ -25,9 +25,11 @@ contract Proposal {
         _;
     }
 
-    modifier proposalisActive(uint _id) {
-        bool isActive = proposals[_id].isActive;
-        require(isActive, "Proposal is inactive");
+    modifier proposalIsActive(uint _id) {
+        bool propIsActive = proposals[_id].isActive;
+        require(!propIsActive || propIsActive, "Proposal doesn't exist");
+
+        require(propIsActive, "Proposal is inactive");
         _;
     }
 
@@ -50,12 +52,20 @@ contract Proposal {
             proposalList.push(_id);
     }
 
-    function getProposal(uint _id) public view returns (ProposalForm memory) {
+    function getProposal(uint _id) public view proposalIsActive(_id) returns (ProposalForm memory) {
         ProposalForm memory proposal = proposals[_id];
         return proposal;
     }
 
-    function getProposalStatus(uint _id) public view returns (bool) {
-        return proposals[_id].isActive;
+    function getProposalStatus(uint _id) public view returns (bool) { return proposals[_id].isActive; }
+
+    function getProposalCount() public view returns (uint) { return proposalList.length; }
+
+    function proposalVote(uint _id, uint _lastVotedAt) public proposalIsActive(_id) {
+        ProposalForm storage prop = proposals[_id];
+        uint vote = 1;
+
+        prop.voteCount += vote;
+        prop.lastVotedAt = _lastVotedAt;
     }
 }
