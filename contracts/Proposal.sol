@@ -13,7 +13,7 @@ contract Proposal {
         console.log("Proposal contract deployed");
     }
 
-    modifier proposalExists(uint _id) {
+    modifier proposalIsDuplicated(uint _id) {
         string memory duplicatedProposalMessage = "Proposal with same ID already exists!";
         bool proposalAlreadyCreated;
         if(proposalList.length > 0) {
@@ -33,6 +33,14 @@ contract Proposal {
         _;
     }
 
+    function _proposalHasReachedGoal(uint _id) private view returns (bool) {
+        uint votes = proposals[_id].voteCount;
+        uint goal = proposals[_id].goal;
+
+        if(votes == goal) return true;
+        return false;
+    }
+
     function newProposal(
         uint _id,
         string memory _name,
@@ -40,7 +48,7 @@ contract Proposal {
         uint _createdAt,
         uint _lastVotedAt,
         Creator memory _creator
-        ) public proposalExists(_id) {
+        ) public proposalIsDuplicated(_id) {
             proposals[_id].name = _name;
             proposals[_id].goal = _goal;
             proposals[_id].createdAt = _createdAt;
@@ -62,6 +70,9 @@ contract Proposal {
     function getProposalCount() public view returns (uint) { return proposalList.length; }
 
     function proposalVote(uint _id, uint _lastVotedAt) public proposalIsActive(_id) {
+        bool goalReached = _proposalHasReachedGoal(_id); // event below...
+        require(!goalReached, "Proposal has reached its target");
+
         ProposalForm storage prop = proposals[_id];
         uint vote = 1;
 
