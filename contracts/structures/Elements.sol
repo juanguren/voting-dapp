@@ -10,18 +10,18 @@ struct Creator {
 
 struct ProposalForm {
     string name;
-    uint goal; // vote count
-    uint createdAt; // timestamp
+    uint256 goal; // vote count
+    uint256 createdAt; // timestamp
     bool isActive;
-    uint lastVotedAt; // timestamp
-    uint voteCount;
+    uint256 lastVotedAt; // timestamp
+    uint256 voteCount;
     Creator createdBy;
     // mapping(uint => Proposal) voteCount;
 }
 
 struct Voter {
     string name;
-    uint age;
+    uint256 age;
     bool hasVoted;
-    uint proposalId;
+    uint256 proposalId;
 }

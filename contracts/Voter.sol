@@ -6,8 +6,7 @@ import "./structures/Elements.sol";
 import "./Proposal.sol";
 
 contract User {
-
-    mapping (address => Voter) public voters;
+    mapping(address => Voter) public voters;
     address[] public voterList;
     Proposal public proposal;
 
@@ -21,8 +20,8 @@ contract User {
 
     modifier userExists() {
         bool userAlreadyCreated;
-        if(voterList.length > 0) {
-            for(uint i = 0; i < voterList.length; i++) {
+        if (voterList.length > 0) {
+            for (uint256 i = 0; i < voterList.length; i++) {
                 userAlreadyCreated = voterList[i] == msg.sender;
             }
         }
@@ -31,7 +30,7 @@ contract User {
         _;
     }
 
-    function newVoter(string memory _name, uint _age) public userExists {
+    function newVoter(string memory _name, uint256 _age) public userExists {
         address id = msg.sender;
 
         voters[id].name = _name;
@@ -47,34 +46,49 @@ contract User {
         return voter;
     }
 
-    function getVoters() public view returns (address[] memory) { return voterList; }
+    function getVoters() public view returns (address[] memory) {
+        return voterList;
+    }
 
-    function getVotersCount() public view returns (uint) { return voterList.length; }
+    function getVotersCount() public view returns (uint256) {
+        return voterList.length;
+    }
 
     function buildProposal(
         address _voterId,
         string memory _proposalName,
-        uint _target,
-        uint _createdAt,
-        uint _lastVotedAt
-        ) public {
+        uint256 _target,
+        uint256 _createdAt,
+        uint256 _lastVotedAt
+    ) public {
         string memory voterName;
         voterName = voters[_voterId].name;
 
-        uint proposalId;
+        uint256 proposalId;
 
         Creator memory creator;
         creator.id = _voterId;
         creator.name = voterName;
 
-        proposal.newProposal(proposalId, _proposalName, _target, _createdAt, _lastVotedAt, creator);
+        proposal.newProposal(
+            proposalId,
+            _proposalName,
+            _target,
+            _createdAt,
+            _lastVotedAt,
+            creator
+        );
     }
 
-    function getProposal(uint _id) public view returns (ProposalForm memory) {
+    function getProposal(uint256 _id)
+        public
+        view
+        returns (ProposalForm memory)
+    {
         return proposal.getProposal(_id);
     }
 
-    function voteProposal(uint _proposalId, uint _lastVotedAt) public {
+    function voteProposal(uint256 _proposalId, uint256 _lastVotedAt) public {
         Voter storage voter = voters[msg.sender];
         require(!voter.hasVoted, "User has already voted.");
 
