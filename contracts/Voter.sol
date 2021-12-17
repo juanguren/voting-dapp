@@ -14,8 +14,8 @@ contract User {
         proposal = Proposal(_proposalId);
     }
 
-    function _getVoterStatus(address _id) private view returns (bool) {
-        return voters[_id].hasVoted;
+    function _getVoterStatus() private view returns (bool) {
+        return voters[msg.sender].hasVoted;
     }
 
     modifier userExists() {
@@ -85,6 +85,8 @@ contract User {
         view
         returns (ProposalForm memory)
     {
+        bool userHasVoted = _getVoterStatus();
+        require(userHasVoted, "User hasn't voted yet");
         return proposal.getProposal(_id);
     }
 
