@@ -27,17 +27,19 @@ contract Proposal {
 
     modifier proposalIsActive(uint256 _id) {
         bool propIsActive = proposals[_id].isActive;
-        require(!propIsActive || propIsActive, "Proposal doesn't exist");
-
-        require(propIsActive, "Proposal is inactive");
+        require(propIsActive, "Proposal is inactive or doesn't exist");
         _;
     }
 
-    function _proposalHasReachedGoal(uint256 _id) private view returns (bool) {
+    function _proposalHasReachedGoal(uint256 _id) private returns (bool) {
         uint256 votes = proposals[_id].voteCount;
         uint256 goal = proposals[_id].goal;
 
-        if (votes == goal) return true;
+        if (votes == goal) {
+            ProposalForm storage prop = proposals[_id];
+            prop.isActive = false;
+            return true;
+        }
         return false;
     }
 
