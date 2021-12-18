@@ -14,21 +14,21 @@ async function main() {
   const voters = await vote.getVoters();
   console.log({ voters });
 
-  const getVoter = await vote.getVoter();
-  const { name, age, hasVoted, proposalId } = getVoter;
-  console.log({ name, hasVoted });
-
   const buildProposal = await vote.buildProposal(
-    owner.address,
     "Test Proposal",
+    23,
     5,
     new Date().getTime(),
     0
   );
   await buildProposal.wait();
 
-  const voteProposal = await vote.voteProposal(0, new Date().getTime());
+  const voteProposal = await vote.voteProposal(23, new Date().getTime());
   await voteProposal.wait();
+
+  const getVoter = await vote.getVoter();
+  const { name, hasVoted, proposalId } = getVoter;
+  console.log({ name, hasVoted, proposalId: proposalId.toString() });
 
   const {
     name: propName,
@@ -38,7 +38,7 @@ async function main() {
     lastVotedAt,
     createdBy,
     goal,
-  } = await vote.getProposal(0);
+  } = await vote.getProposal(23);
   console.log({
     propName,
     isActive,
@@ -48,6 +48,16 @@ async function main() {
     createdBy,
     goal: goal.toString(),
   });
+
+  await vote.retrieveVote(23, new Date().getTime());
+
+  const getVoterAgain = await vote.getVoter();
+  const {
+    name: _name,
+    hasVoted: _hasVoted,
+    proposalId: _proposalId,
+  } = getVoterAgain;
+  console.log({ _name, _hasVoted, proposalId: _proposalId.toString() });
 }
 
 const deployProposalContract = async () => {
