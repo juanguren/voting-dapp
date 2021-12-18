@@ -11,6 +11,7 @@ contract Proposal {
     event ProposalVoted(uint indexed proposalId, address user, uint _lastVotedAt);
     event ProposalCreated(uint indexed proposalId, address indexed createdBy, string name, uint createdAt);
     event ProposalReachedTarget(uint indexed proposalId, uint target);
+    event VoteWasRetrieved(uint indexed proposalId, address indexed user, uint time);
 
     constructor() {
         console.log("Proposal contract deployed");
@@ -73,7 +74,6 @@ contract Proposal {
     function getProposal(uint256 _id)
         public
         view
-        proposalIsActive(_id)
         returns (ProposalForm memory)
     {
         ProposalForm memory proposal = proposals[_id];
@@ -102,5 +102,14 @@ contract Proposal {
         prop.lastVotedAt = _lastVotedAt;
 
         emit ProposalVoted(_id, msg.sender, _lastVotedAt);
+    }
+
+    function liquidVote(uint _id, uint time) public proposalIsActive(_id) {
+        ProposalForm storage prop = proposals[_id];
+        uint vote = 1;
+
+        prop.voteCount -= vote;
+        prop.lastVotedAt = time;
+        emit VoteWasRetrieved(_id, msg.sender, time);
     }
 }

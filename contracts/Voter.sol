@@ -59,23 +59,21 @@ contract User {
     }
 
     function buildProposal(
-        address _voterId,
         string memory _proposalName,
+        uint256 _proposalId,
         uint256 _target,
         uint256 _createdAt,
         uint256 _lastVotedAt
     ) public {
         string memory voterName;
-        voterName = voters[_voterId].name;
-
-        uint256 proposalId;
+        voterName = voters[msg.sender].name;
 
         Creator memory creator;
-        creator.id = _voterId;
+        creator.id = msg.sender;
         creator.name = voterName;
 
         proposal.newProposal(
-            proposalId,
+            _proposalId,
             _proposalName,
             _target,
             _createdAt,
@@ -89,8 +87,6 @@ contract User {
         view
         returns (ProposalForm memory)
     {
-        bool userHasVoted = _getVoterStatus();
-        require(userHasVoted, "User hasn't voted yet");
         return proposal.getProposal(_id);
     }
 
@@ -103,4 +99,14 @@ contract User {
 
         proposal.proposalVote(_proposalId, _lastVotedAt);
     }
+
+    function retrieveVote(uint _id, uint time) public {
+        bool userHasVoted = _getVoterStatus();
+        require(userHasVoted, "User hasn't voted yet");
+
+        proposal.liquidVote(_id, time);
+        Voter storage voter = voters[msg.sender];
+        voter.hasVoted = false;
+        voter.proposalId = 0;
+    } 
 }
