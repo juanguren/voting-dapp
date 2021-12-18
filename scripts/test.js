@@ -21,7 +21,7 @@ async function main() {
   const buildProposal = await vote.buildProposal(
     owner.address,
     "Test Proposal",
-    20,
+    5,
     new Date().getTime(),
     0
   );
@@ -34,13 +34,19 @@ async function main() {
     name: propName,
     isActive,
     voteCount,
+    createdAt,
     lastVotedAt,
+    createdBy,
+    goal,
   } = await vote.getProposal(0);
   console.log({
     propName,
     isActive,
     voteCount: Number(voteCount.toString()),
+    createdAt: new Date(createdAt * 1000),
     lastVotedAt: new Date(lastVotedAt * 1000),
+    createdBy,
+    goal: goal.toString(),
   });
 }
 
