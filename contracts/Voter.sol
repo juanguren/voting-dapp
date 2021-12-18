@@ -10,6 +10,8 @@ contract User {
     address[] public voterList;
     Proposal public proposal;
 
+    event VoterCreated(address indexed id, string name);
+
     constructor(address _proposalId) {
         proposal = Proposal(_proposalId);
     }
@@ -37,6 +39,8 @@ contract User {
         voters[id].age = _age;
         voters[id].hasVoted = false;
         voters[id].proposalId = 0;
+
+        emit VoterCreated(id, _name);
 
         voterList.push(id);
     }
