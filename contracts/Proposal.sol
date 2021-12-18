@@ -8,6 +8,10 @@ contract Proposal {
     mapping(uint256 => ProposalForm) public proposals;
     uint256[] public proposalList;
 
+    event ProposalVoted(uint indexed proposalId, address user, uint _lastVotedAt);
+    event ProposalCreated(uint indexed proposalId, address indexed createdBy, string name, uint createdAt);
+    event ProposalReachedTarget(uint indexed proposalId, uint target);
+
     constructor() {
         console.log("Proposal contract deployed");
     }
@@ -36,6 +40,8 @@ contract Proposal {
         uint256 goal = proposals[_id].goal;
 
         if (votes == goal) {
+            emit ProposalReachedTarget(_id, goal);
+
             ProposalForm storage prop = proposals[_id];
             prop.isActive = false;
             return true;
@@ -58,6 +64,8 @@ contract Proposal {
         proposals[_id].lastVotedAt = _lastVotedAt;
         proposals[_id].voteCount = 0;
         proposals[_id].createdBy = _creator;
+
+        emit ProposalCreated(_id, msg.sender, _name, _createdAt);
 
         proposalList.push(_id);
     }
@@ -92,5 +100,7 @@ contract Proposal {
 
         prop.voteCount += vote;
         prop.lastVotedAt = _lastVotedAt;
+
+        emit ProposalVoted(_id, msg.sender, _lastVotedAt);
     }
 }
