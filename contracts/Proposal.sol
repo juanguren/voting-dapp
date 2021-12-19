@@ -8,10 +8,23 @@ contract Proposal {
     mapping(uint256 => ProposalForm) public proposals;
     uint256[] public proposalList;
 
-    event ProposalVoted(uint indexed proposalId, address user, uint _lastVotedAt);
-    event ProposalCreated(uint indexed proposalId, address indexed createdBy, string name, uint createdAt);
-    event ProposalReachedTarget(uint indexed proposalId, uint target);
-    event VoteWasRetrieved(uint indexed proposalId, address indexed user, uint time);
+    event ProposalVoted(
+        uint256 indexed proposalId,
+        address user,
+        uint256 _lastVotedAt
+    );
+    event ProposalCreated(
+        uint256 indexed proposalId,
+        address indexed createdBy,
+        string name,
+        uint256 createdAt
+    );
+    event ProposalReachedTarget(uint256 indexed proposalId, uint256 target);
+    event VoteWasRetrieved(
+        uint256 indexed proposalId,
+        address indexed user,
+        uint256 time
+    );
 
     constructor() {
         console.log("Proposal contract deployed");
@@ -104,9 +117,12 @@ contract Proposal {
         emit ProposalVoted(_id, msg.sender, _lastVotedAt);
     }
 
-    function liquidVote(uint _id, uint time) public proposalIsActive(_id) {
+    function liquidVote(uint256 _id, uint256 time)
+        public
+        proposalIsActive(_id)
+    {
         ProposalForm storage prop = proposals[_id];
-        uint vote = 1;
+        uint256 vote = 1;
 
         prop.voteCount -= vote;
         prop.lastVotedAt = time;
