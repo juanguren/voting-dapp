@@ -1,11 +1,12 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 import "./structures/Elements.sol";
 import "./Proposal.sol";
 
-contract User {
+contract User is Ownable {
     mapping(address => Voter) public voters;
     address[] public voterList;
     Proposal public proposal;
@@ -108,5 +109,12 @@ contract User {
         Voter storage voter = voters[msg.sender];
         voter.hasVoted = false;
         voter.proposalId = 0;
-    } 
+    }
+
+    /// @notice Erases an existing proposal. May be called by owner (admin) only 
+    /// @dev onlyOwner is a function modifier straight from OpenZeppelin access contracts
+    /// @param _id The proposal ID.
+    function deleteProposal(uint _id) external onlyOwner {
+        proposal.proposalErase(_id);
+    }
 }
