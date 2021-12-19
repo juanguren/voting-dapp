@@ -100,7 +100,7 @@ contract User {
         proposal.proposalVote(_proposalId, _lastVotedAt);
     }
 
-    function retrieveVote(uint _id, uint time) public {
+    function retrieveVote(uint256 _id, uint256 time) public {
         bool userHasVoted = _getVoterStatus();
         require(userHasVoted, "User hasn't voted yet");
 
@@ -108,5 +108,5 @@ contract User {
         Voter storage voter = voters[msg.sender];
         voter.hasVoted = false;
         voter.proposalId = 0;
-    } 
+    }
 }
