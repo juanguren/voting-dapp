@@ -49,7 +49,7 @@ async function main() {
     goal: goal.toString(),
   });
 
-  await vote.retrieveVote(23, new Date().getTime());
+  // await vote.retrieveVote(23, new Date().getTime());
 
   const getVoterAgain = await vote.getVoter();
   const {
@@ -58,6 +58,9 @@ async function main() {
     proposalId: _proposalId,
   } = getVoterAgain;
   console.log({ _name, _hasVoted, proposalId: _proposalId.toString() });
+
+  const eraseProp = await vote.deleteProposal(23);
+  await eraseProp.wait();
 }
 
 const deployProposalContract = async () => {
