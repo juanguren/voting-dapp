@@ -13,10 +13,6 @@ contract Proposal {
     event ProposalReachedTarget(uint indexed proposalId, uint target);
     event VoteWasRetrieved(uint indexed proposalId, address indexed user, uint time);
 
-    constructor() {
-        console.log("Proposal contract deployed");
-    }
-
     modifier proposalIsDuplicated(uint256 _id) {
         string
             memory duplicatedProposalMessage = "Proposal with same ID already exists!";
@@ -111,5 +107,17 @@ contract Proposal {
         prop.voteCount -= vote;
         prop.lastVotedAt = time;
         emit VoteWasRetrieved(_id, msg.sender, time);
+    }
+
+    /// @notice Implements the proposal delete only if total vote count isn't greater than 35% of the target
+    /// @dev Looks like solidity doesn't handle float numbers well. A little hack was necessary (see: percentageAchieved)
+    function proposalErase(uint _id) public proposalIsActive(_id) {
+        uint256 votes = proposals[_id].voteCount;
+        uint256 goal = proposals[_id].goal;
+        uint256 percentageAchieved = (votes * 100) / goal;
+
+        require(percentageAchieved < 35, "35% vote treshold achieved.");
+
+        delete proposals[_id];
     }
 }
