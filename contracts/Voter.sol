@@ -101,7 +101,7 @@ contract User is Ownable {
         proposal.proposalVote(_proposalId, _lastVotedAt);
     }
 
-    function retrieveVote(uint _id, uint time) public {
+    function retrieveVote(uint256 _id, uint256 time) public {
         bool userHasVoted = _getVoterStatus();
         require(userHasVoted, "User hasn't voted yet");
 
