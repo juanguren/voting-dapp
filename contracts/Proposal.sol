@@ -41,8 +41,21 @@ contract Proposal {
 
     modifier proposalIsActive(uint256 _id) {
         bool propIsActive = proposals[_id].isActive;
-        require(propIsActive, "Proposal is inactive or doesn't exist");
+        require(propIsActive, "Prop inactive or none existant");
         _;
+    }
+
+    /// @notice Checks all existing proposals to see if any is stagnated. If so, it marks those as inactive.
+    /// @dev This is meant to be called by a cron job implemented in an independant lambda function. Time: 3 days
+    function proposalIsStagnated() external {
+        if (proposalList.length > 0) {
+            for (uint16 i = 0; i < proposalList.length; i++) {
+                if(proposals[i].lastVotedAt == proposals[i].createdAt) {
+                    ProposalForm storage prop = proposals[i];
+                    prop.isActive = false;
+                }
+            }
+        }
     }
 
     function _proposalHasReachedGoal(uint256 _id) private returns (bool) {
@@ -125,8 +138,8 @@ contract Proposal {
         emit VoteWasRetrieved(_id, msg.sender, time);
     }
 
-    /// @notice Implements the proposal delete only if total vote count isn't greater than 35% of the target
-    /// @dev Looks like solidity doesn't handle float numbers well. A little hack was necessary (see: percentageAchieved)
+    /// @notice Implements the proposal deletion only if total vote count isn't greater than 35% of the target
+    /// @dev Looks like solidity doesn't handle float numbers well, so a little hack was necessary (see: percentageAchieved)
     function proposalErase(uint _id) public proposalIsActive(_id) {
         uint256 votes = proposals[_id].voteCount;
         uint256 goal = proposals[_id].goal;
