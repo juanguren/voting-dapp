@@ -6,9 +6,17 @@ import "hardhat/console.sol";
 import "./structures/Elements.sol";
 import "./Proposal.sol";
 
+/// @title User (voter) Contract
+/// @author Juan Felipe Aranguren
+/// @notice Manages voter operations with checks
+/// @dev This is a CRUD program with validations
+
 contract User is Ownable {
+    /// @notice voters mapping.
     mapping(address => Voter) public voters;
+    /// @notice a voter address array
     address[] public voterList;
+    /// @notice a Proposal contract object
     Proposal public proposal;
 
     event VoterCreated(address indexed id, string name);
@@ -21,6 +29,7 @@ contract User is Ownable {
         return voters[msg.sender].hasVoted;
     }
 
+    /// @notice searchs for duplicate users
     modifier userExists() {
         bool userAlreadyCreated;
         if (voterList.length > 0) {
@@ -59,6 +68,7 @@ contract User is Ownable {
         return voterList.length;
     }
 
+    /// @notice lets users build proposals
     function buildProposal(
         string memory _proposalName,
         uint256 _proposalId,
@@ -91,6 +101,7 @@ contract User is Ownable {
         return proposal.getProposal(_id);
     }
 
+    /// @notice lets users vote for proposals. 1 user, 1 vote.
     function voteProposal(uint256 _proposalId, uint256 _lastVotedAt) public {
         Voter storage voter = voters[msg.sender];
         require(!voter.hasVoted, "User has already voted.");
@@ -101,6 +112,7 @@ contract User is Ownable {
         proposal.proposalVote(_proposalId, _lastVotedAt);
     }
 
+    /// @notice lets users retrieve their vote (for whatever reason)
     function retrieveVote(uint256 _id, uint256 time) public {
         bool userHasVoted = _getVoterStatus();
         require(userHasVoted, "User hasn't voted yet");

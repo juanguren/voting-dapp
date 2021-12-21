@@ -4,8 +4,16 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 import "./structures/Elements.sol";
 
+/// @title Proposal Contract
+/// @author Juan Felipe Aranguren
+/// @notice Manages proposal operations with checks
+/// @dev This is a CRUD program with validations
+
 contract Proposal {
+
+    /// @notice proposals mapping. The uint is its unique ID
     mapping(uint256 => ProposalForm) public proposals;
+    /// @notice holds IDs of all created proposals
     uint256[] public proposalList;
 
     event ProposalVoted(
@@ -26,6 +34,7 @@ contract Proposal {
         uint256 time
     );
 
+    /// @notice checks for duplicated proposals
     modifier proposalIsDuplicated(uint256 _id) {
         string
             memory duplicatedProposalMessage = "Proposal with same ID already exists!";
@@ -39,12 +48,15 @@ contract Proposal {
         _;
     }
 
+    /// @notice checks for inactive or non-existing proposals
     modifier proposalIsActive(uint256 _id) {
         bool propIsActive = proposals[_id].isActive;
         require(propIsActive, "Proposal is inactive or doesn't exist");
         _;
     }
 
+    /// @notice checks for completed proposals
+    /// @dev voteCount == goal (set ammount of votes)
     function _proposalHasReachedGoal(uint256 _id) private returns (bool) {
         uint256 votes = proposals[_id].voteCount;
         uint256 goal = proposals[_id].goal;
@@ -59,6 +71,7 @@ contract Proposal {
         return false;
     }
 
+    /// @notice a proposal is created. ID must be unique
     function newProposal(
         uint256 _id,
         string memory _name,
@@ -113,6 +126,8 @@ contract Proposal {
         emit ProposalVoted(_id, msg.sender, _lastVotedAt);
     }
 
+    /// @notice handles the vote retrieval as a small "Direct Democracy" mechanism
+    /// @dev notice a that a vote is substracted and also the lastVotedAt timestamp is updated
     function liquidVote(uint256 _id, uint256 time)
         public
         proposalIsActive(_id)
